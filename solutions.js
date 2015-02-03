@@ -68,6 +68,11 @@ function isFactor(big, small) {
 }
 
 function isPrime(n) {
+  if ((n == 1) ||               // n is 1
+      (n % 10 == 5) ||          // n is multiple of 5
+      (n != 2 && n % 2 == 0)) { // multiple of 2 (but not 2 itself)
+    return;
+  }
   var sqrt = Math.sqrt(n);
   for (var i = 2; i <= sqrt; i++) {
     if (n % i === 0) {
@@ -194,4 +199,49 @@ function solve6() {
     sum_of_squares += Math.pow(i, 2);
   };
   return Math.abs(square_of_sum - sum_of_squares);
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Problem 7 ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+// By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that the 6th prime is 13.
+// What is the 10,001st prime number?
+
+function solve7() {
+  var target = 10001;
+  var count  = 0;
+  var iter   = 0;
+  var start  = 0;
+  var stop; 
+
+  while (count < target) {
+    var numbers = new Uint8Array(target);
+    stop = start + target - 1;
+
+    if (iter == 0) {
+      numbers[0] = 1;
+      numbers[1] = 1;
+    }
+
+    for (var i1 = 2; i1 < numbers.length; i1++) {
+      var min = Math.max(Math.ceil(start / i1), 2); // at least 2
+      var max = Math.floor(stop / i1);
+      for (var i2 = min; i2 <= max; i2++) {
+        numbers[i1 * i2 - (target * iter)] = 1;
+      };
+    };
+
+    for (var i = 0; i < numbers.length; i++) {
+      if (!numbers[i]) { // eg if numbers[i] was not set to 1 in above loop
+        count++;
+        if (count == target) {
+          return i + (target * iter);
+        }
+      }
+    };
+
+    start = stop + 1;
+    iter++;
+  }
 }
